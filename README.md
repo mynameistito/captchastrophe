@@ -20,4 +20,4 @@ Design C is implemented in `site/`. The original three mocks and their switcher 
 
 ## Status
 
-The gallery is live on Cloudflare, with light/dark and mobile checks passing. No fake contestants are seeded. Convex dev/prod are deployed. Real GitHub login, session restoration and sign-out pass on production; voting integration is enabled, but there are no accepted entries to vote on yet. GitHub publishing credentials are configured; the Bun/cf workflow updates still need pushing and CI verification. Fork previews are not verified yet. See [setup status](docs/maintainers.md) for remaining work.
+The gallery is live on Cloudflare, with light/dark and mobile checks passing. No fake contestants are seeded. Convex dev/prod are deployed. Real GitHub login, session restoration and sign-out pass on production; voting integration is enabled, but there are no accepted entries to vote on yet. Bun CI and production publishing through GitHub Actions are verified and enabled. Fork previews are not verified yet. See [setup status](docs/maintainers.md) for remaining work.

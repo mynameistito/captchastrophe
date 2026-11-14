@@ -2,7 +2,7 @@
 
 2026-11-14. Tests are evidence for these paths, not a blanket safety certificate.
 
-- Bun migration: `bun install --frozen-lockfile`, `bun run validate`, `bun run typecheck`, `bun run test` and `bun run build` pass locally with Bun 1.4.0. Updated GitHub workflows have not yet run.
+- Bun migration: `bun install --frozen-lockfile`, `bun run validate`, `bun run typecheck`, `bun run test` and `bun run build` pass locally with Bun 1.4.0. Bun CI passed on `a9c9958`: https://github.com/pc-style/captchastrophe/actions/runs/43574211661 (including Linux browser checks).
 - `bun run typecheck`: gallery/tooling and Convex pass.
 - `bun run test`: 14 passing tests across manifest/boundary policy, artifact validation, gallery filtering/ranking, frame messages and Convex voting/moderation.
 - Convex tests exercise concurrent duplicates, switching/removing, immutable first activity, default/configured rate limits, account age, unknown entries, forged arguments, unauthenticated writes and maintainer authorization/invalidation. **Auth v2 session lookup is mocked in these tests.**
@@ -18,4 +18,4 @@ Live deployment verified: https://captchastrophe-site.pcstyle.workers.dev return
 
 OAuth follow-up: both Convex backends deployed. Real Helium GitHub consent, production callback redemption, reload/session restoration and sign-out pass. Server-side numeric GitHub ID and account age are populated. Live testing caught and fixed the wrong callback parameter (`code` instead of Auth v2's `convexAuthCode`) and an HTTP 403 on unauthenticated account-age lookup. The lookup now uses the OAuth app's public-data quota. Both regressions have tests; all 16 tests and typecheck pass. A bounded Vite check confirms local development loads the dev URL from `.env.local`, not production, and exposes no server credential.
 
-Still unverified: time-based token refresh; full dev browser OAuth; live voting/moderation against a test entry; deployed HTTPS capability delegation and signed-in frame isolation; actual fork PR through publishing and cleanup; load behavior near service quotas. Scoped publishing credentials are configured in GitHub, but updated Bun/cf workflows have not run remotely.
+Still unverified: time-based token refresh; full dev browser OAuth; live voting/moderation against a test entry; deployed HTTPS capability delegation and signed-in frame isolation; actual fork PR through publishing and cleanup; load behavior near service quotas. Production publishing with scoped credentials passed: https://github.com/pc-style/captchastrophe/actions/runs/43574278015. Automatic hosting is enabled.
