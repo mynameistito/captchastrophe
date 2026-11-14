@@ -2,7 +2,7 @@
 
 The worst captchas, on purpose. The website should be lovely. The captcha is where everything goes to shit.
 
-[Live site](https://captchastrophe-site.pcstyle.workers.dev) · [Contribute](CONTRIBUTING.md) · [Rules](docs/rules.md) · [Agent workflow](AGENTS.md)
+[Live site](https://captchastrophe.pcstyle.dev) · [Contribute](CONTRIBUTING.md) · [Rules](docs/rules.md) · [Agent workflow](AGENTS.md)
 
 ## Run it
 
