@@ -7,7 +7,7 @@ Pinned: `convex` 1.50.0, `@convex-dev/auth` 2.0.0. [Official Auth v2 OAuth integ
 [OAuth app](https://github.com/settings/applications/4019916), owned by `pc-style`:
 
 - Name: captchastrophe
-- Homepage: https://captchastrophe-site.pcstyle.workers.dev
+- Homepage: https://captchastrophe-site.pcstyle.workers.dev (redirects to https://captchastrophe.pcstyle.dev)
 - Production callback: `https://posh-blackbird-302.convex.site/oauth/github/callback`
 - Development callback: `https://little-dachshund-797.convex.site/oauth/github/callback`
 - Exact callbacks, no wildcard or device flow. One app currently serves both environments; they have separate databases and auth sessions.
@@ -28,7 +28,7 @@ The local gallery uses the dev backend, not the last production build's config. 
 ## Server configuration
 
 - [Dev dashboard](https://dashboard.convex.dev/d/little-dachshund-797): `ALLOWED_REDIRECT_ORIGINS=http://127.0.0.1:5173,http://localhost:5173`.
-- [Production dashboard](https://dashboard.convex.dev/d/posh-blackbird-302): only `https://captchastrophe-site.pcstyle.workers.dev` is allowed. No previews.
+- [Production dashboard](https://dashboard.convex.dev/d/posh-blackbird-302): only `https://captchastrophe.pcstyle.dev` is allowed. No old gallery or preview origins. Sign-in initiation from the new origin is checked; the backend GitHub callbacks above are unchanged.
 - `MAINTAINER_GITHUB_IDS=134572227` on both deployments.
 - `VOTE_MIN_ACCOUNT_AGE_DAYS` defaults to 7; `VOTE_MAX_CHANGES_PER_MINUTE` to 10.
 - Account-age lookup uses OAuth app credentials server-side for public GitHub data. This avoids the shared unauthenticated IP quota without requesting more user permissions. An optional `GITHUB_API_TOKEN` overrides this. [Official rate limits](https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api): 5,000 requests/hour per OAuth app; failures leave eligibility pending and a later sign-in retries.

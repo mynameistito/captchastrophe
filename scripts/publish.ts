@@ -7,15 +7,17 @@ const accountSubdomain=process.env.CLOUDFLARE_WORKERS_SUBDOMAIN;
 if(!accountSubdomain || !/^[a-z0-9-]+$/.test(accountSubdomain))throw new Error('Set CLOUDFLARE_WORKERS_SUBDOMAIN to the account workers.dev subdomain');
 const preview=process.env.PREVIEW_PR;
 if(preview && !/^[1-9][0-9]*$/.test(preview))throw new Error('Invalid PR number');
-const siteName=preview?`cx-preview-${preview}`:'captchastrophe-site';
-const siteOrigin=`https://${siteName}.${accountSubdomain}.workers.dev`;
+const productionHostname='captchastrophe.pcstyle.dev';
+const siteName=preview?`cx-preview-${preview}`:'captchastrophe';
+const siteOrigin=preview?`https://${siteName}.${accountSubdomain}.workers.dev`:`https://${productionHostname}`;
 const index=JSON.parse(await fs.readFile('dist/site/data/index.json','utf8'));
 const entryOrigins:Record<string,string>={};
 const deployRoot=path.resolve('.deploy');await fs.mkdir(deployRoot,{recursive:true});
 async function upload(name:string,directory:string){
   const cwd=path.join(deployRoot,name);
   await fs.mkdir(cwd,{recursive:true});
-  const config={worker:{name,compatibilityDate:'2026-11-14',workersDev:true}};
+  const gallery=!preview && name===siteName;
+  const config={worker:{name,compatibilityDate:'2026-11-14',workersDev:!gallery,...(gallery?{domains:[productionHostname]}:{})}};
   await fs.writeFile(path.join(cwd,'cloudflare.config.ts'),`import { defineConfig } from 'cf/config';\nexport default defineConfig(${JSON.stringify(config)});\n`);
   const args=[path.resolve('node_modules/cf/bin/cf'),'deploy',path.resolve(directory)];
   if(process.argv.includes('--dry-run'))args.push('--dry-run');
@@ -35,6 +37,13 @@ await fs.writeFile('dist/site/data/config.json',JSON.stringify({entryOrigins,vot
 const origins=Object.keys(entryOrigins).length ? `https://*.${accountSubdomain}.workers.dev` : '';
 await fs.writeFile('dist/site/_headers',`/*\n  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: https://avatars.githubusercontent.com; connect-src 'self' https://*.convex.cloud https://*.convex.site wss://*.convex.cloud; frame-src ${origins || "'none'"}; frame-ancestors 'none'; object-src 'none'; base-uri 'none'; form-action 'self'\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: no-referrer\n`);
 await upload(siteName,'dist/site');
+if(!preview){
+  const redirectDir=path.join(deployRoot,'legacy-redirect-assets');
+  await fs.mkdir(redirectDir,{recursive:true});
+  await fs.writeFile(path.join(redirectDir,'_redirects'),`/* ${siteOrigin}/:splat 308\n`);
+  await fs.writeFile(path.join(redirectDir,'index.html'),`<!doctype html><title>Moved</title><a href="${siteOrigin}">captchastrophe has moved</a>\n`);
+  await upload('captchastrophe-site',redirectDir);
+}
 console.log((process.argv.includes('--dry-run')?'Dry-run gallery target: ':'Gallery: ')+siteOrigin);
 if(!process.argv.includes('--dry-run') && process.env.GITHUB_OUTPUT)await fs.appendFile(process.env.GITHUB_OUTPUT,`url=${siteOrigin}\n`);
 if(!process.argv.includes('--dry-run') && !preview && process.env.CONVEX_SITE_URL && process.env.SYNC_TOKEN){
