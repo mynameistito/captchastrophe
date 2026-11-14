@@ -1,0 +1,17 @@
+{
+  "id": "handwrite-not-a-robot",
+  "title": "Handwrite I'm not a robot",
+  "description": "Write the phrase yourself. We barely check spelling. We obsessively check whether your strokes move like a living hand.",
+  "author": {
+    "github": "pc-style"
+  },
+  "entry": "entry.ts",
+  "capabilities": [],
+  "layout": { "minHeight": 520 },
+  "concept": {
+    "action": "Handwrite \"I'm not a robot\" with a mouse, finger or stylus.",
+    "sequence": "Write, submit, watch your strokes replay colour-coded by speed, then read a forensic report on your hand.",
+    "difficulty": "Writing legibly with a mouse is hard, and every careful, smooth, steady line you draw to make it neater looks more like a machine.",
+    "success": "The scrawl loosely resembles the phrase and the strokes pass the kinematics tests: speed variation, two-thirds power law, timing, tremor, real input."
+  }
+}
