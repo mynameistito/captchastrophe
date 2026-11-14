@@ -15,6 +15,7 @@ const theme = createTheme();
 const themeButton = document.querySelector<HTMLButtonElement>('#theme')!;
 function themeIcon() { themeButton.replaceChildren(theme.current() === 'dark' ? icons.sun() : icons.moon()); themeButton.setAttribute('aria-label', `Switch to ${theme.current() === 'dark' ? 'light' : 'dark'} theme`); }
 themeButton.onclick = () => theme.toggle(); themeIcon();
+themeButton.hidden = false;
 let host: FrameHost | null = null;
 let stopVotingListener: (() => void) | undefined;
 theme.subscribe(t => { themeIcon(); host?.sendTheme(t); });

@@ -4,10 +4,11 @@ import { build, loadEnv } from 'vite';
 import { z } from 'zod';
 import { manifestSchema } from './manifest.ts';
 import { listSubmissionDirs, validateDirectory } from './validate.ts';
+import { entryPath, renderEntryPage, renderLibrary, renderSitemap, withCanonical, withMain, type GalleryEntry } from './site-discovery.ts';
 
 const env = { ...loadEnv('production', process.cwd(), 'VITE_'), ...process.env };
 await build({ configFile: 'site/vite.config.ts' });
-const entries = [];
+const entries: GalleryEntry[] = [];
 for (const dir of listSubmissionDirs().dirs) {
   const { manifest: m, errors } = validateDirectory(dir);
   if (!m || errors.length) throw new Error(errors.join('\n'));
@@ -27,4 +28,12 @@ if (flag !== -1) {
 await fs.mkdir('dist/site/data', { recursive: true });
 await fs.writeFile('dist/site/data/index.json', JSON.stringify({ generatedAt: new Date().toISOString(), entries }));
 await fs.writeFile('dist/site/data/config.json', JSON.stringify({ playOrigin: env.VITE_PLAY_ORIGIN ?? null, voting: !!env.VITE_CONVEX_URL }));
-console.log(`Built gallery: ${entries.length} accepted entries`);
+const shell = await fs.readFile('dist/site/index.html', 'utf8');
+await fs.writeFile('dist/site/index.html', withCanonical(withMain(shell, renderLibrary(entries)), '/'));
+for (const entry of entries) {
+  const directory = 'dist/site' + entryPath(entry);
+  await fs.mkdir(directory, { recursive: true });
+  await fs.writeFile(directory + 'index.html', renderEntryPage(shell, entry));
+}
+await fs.writeFile('dist/site/sitemap.xml', renderSitemap(entries));
+console.log(`Built gallery: ${entries.filter(e => e.status === 'accepted').length} accepted, ${entries.filter(e => e.status === 'pre-review').length} pre-review entries`);
