@@ -23,7 +23,7 @@ await new Promise<void>(r=>playServer.listen(0,'127.0.0.1',r));
 const playPort=(playServer.address() as {port:number}).port;
 const savedIndex=await fs.readFile('dist/site/data/index.json');
 const savedConfig=await fs.readFile('dist/site/data/config.json');
-const child = spawn(process.env.CHROME_PATH ?? (process.platform === 'darwin' ? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' : '/usr/bin/google-chrome'), [...(process.env.CI ? ['--no-sandbox'] : []), '--headless=new','--no-first-run','--no-default-browser-check','--remote-debugging-port=0','--user-data-dir='+profile,'about:blank'],{stdio:'ignore'});
+const child = spawn(process.env.CHROME_PATH ?? (process.platform === 'darwin' ? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' : '/usr/bin/google-chrome'), [...(process.env.CI ? ['--no-sandbox'] : []), '--headless=new','--use-fake-device-for-media-stream','--no-first-run','--no-default-browser-check','--remote-debugging-port=0','--user-data-dir='+profile,'about:blank'],{stdio:'ignore'});
 let socket: WebSocket | undefined;
 try {
   let debugPort = '';
