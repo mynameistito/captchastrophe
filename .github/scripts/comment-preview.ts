@@ -1,0 +1,12 @@
+import fs from 'node:fs';
+import { execFileSync } from 'node:child_process';
+const p=JSON.parse(fs.readFileSync('.preview/provenance.json','utf8'));
+const url=process.env.PREVIEW_URL;
+if(!url || new URL(url).protocol!=='https:')throw new Error('Missing preview URL');
+const route=`repos/pc-style/captchastrophe/issues/${p.pr}/comments`;
+const comments=JSON.parse(execFileSync('gh',['api','--paginate','--slurp',route],{encoding:'utf8'})).flat();
+const marker='<!-- captchastrophe-preview -->';
+const previous=comments.find((c:any)=>c.user.login==='github-actions[bot]'&&c.body.startsWith(marker));
+const body=`${marker}\nUnreviewed preview for commit \`${p.head}\`: ${url}\n\nBuilt by CI run ${p.run}. Voting is disabled. The entry does not run until you deliberately launch it. This is not acceptance.`;
+const target=previous?`repos/pc-style/captchastrophe/issues/comments/${previous.id}`:route;
+execFileSync('gh',['api','--method',previous?'PATCH':'POST',target,'--input','-'],{input:JSON.stringify({body}),stdio:['pipe','ignore','inherit']});

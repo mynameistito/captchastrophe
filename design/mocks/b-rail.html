@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mock B · Rail</title>
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/components.css">
+<link rel="stylesheet" href="assets/mock.css">
+<style>
+  .app { display: grid; grid-template-columns: 232px minmax(280px, 400px) 1fr; height: 100vh; }
+  .rail { border-right: 1px solid var(--border); padding: 24px 16px; display: flex; flex-direction: column; gap: 32px; }
+  .brand { padding: 0 8px; font-weight: 560; color: var(--strong); letter-spacing: -.01em; }
+  .nav { display: grid; gap: 4px; }
+  .nav button { min-height: 48px; padding: 0 12px; border: 0; border-radius: var(--radius-control); background: none; text-align: left; font-size: 14px; color: var(--muted-foreground); display: flex; justify-content: space-between; align-items: center; }
+  .nav button:hover { color: var(--strong); }
+  .nav button[aria-current=true] { background: var(--muted); color: var(--strong); }
+  .nav .n { font-variant-numeric: tabular-nums; }
+  .nav button { gap: 8px; }
+  .rail .foot { margin-top: auto; display: grid; gap: 4px; }
+  .rail .foot a { min-height: 40px; display: flex; align-items: center; padding: 0 12px; font-size: 14px; color: var(--muted-foreground); text-decoration: none; }
+  .rail .foot a:hover { color: var(--strong); }
+  .listcol { border-right: 1px solid var(--border); display: flex; flex-direction: column; min-height: 0; }
+  .listcol .tools { padding: 16px; display: grid; gap: 8px; border-bottom: 1px solid var(--border); }
+  .listcol .sortrow { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; }
+  .scroll { overflow: auto; flex: 1; }
+  .li { display: block; width: 100%; text-align: left; padding: 16px 24px; border: 0; border-bottom: 1px solid var(--border); background: none; }
+  .li:hover { background: var(--muted); }
+  .li[aria-current=true] { background: var(--muted); box-shadow: inset 2px 0 0 var(--foreground); }
+  .li .t { color: var(--strong); font-weight: 500; font-size: 14px; line-height: 20px; }
+  .li .m { display: flex; justify-content: space-between; font-size: 14px; line-height: 20px; color: var(--muted-foreground); margin-top: 2px; }
+  .detail { overflow: auto; padding: 32px; }
+  .detail-in { max-width: 720px; margin: 0 auto; display: grid; gap: 24px; }
+  .detail h1 { font-size: 24px; line-height: 32px; letter-spacing: -.01em; color: var(--strong); }
+  .empty { height: 100%; display: grid; place-items: center; text-align: center; padding: 32px; }
+  .group { border: 1px solid var(--border); border-radius: var(--radius-panel); background: var(--muted); padding: 0 24px; }
+  .group .r { display: flex; justify-content: space-between; gap: 16px; align-items: center; padding: 16px 0; font-size: 14px; line-height: 20px; }
+  .group .r + .r { border-top: 1px solid var(--border); }
+  .mobile-back { display: none; }
+  @media (max-width: 1000px) { .app { grid-template-columns: 200px 1fr; } .detail { display: none; } .app.open .listcol { display: none; } .app.open .detail { display: block; grid-column: 2; } }
+  @media (max-width: 640px) {
+    .app { grid-template-columns: 1fr; grid-template-rows: auto 1fr; height: auto; min-height: 100vh; }
+    .rail { flex-direction: row; align-items: center; padding: 8px 16px; border-right: 0; border-bottom: 1px solid var(--border); overflow-x: auto; gap: 8px; }
+    .rail .nav { display: flex; } .rail .foot { display: none; } .rail .brand { display: none; }
+    .app.open .listcol { display: none; } .app.open .detail { grid-column: 1; display: block; padding: 16px; }
+    .mobile-back { display: inline-flex; align-items: center; gap: 4px; min-height: 48px; }
+    .rail .nav button { white-space: nowrap; }
+    .listcol { border-right: 0; } .detail { display: none; }
+  }
+</style>
+</head>
+<body class="soft-ui">
+<div class="app" id="app">
+  <aside class="rail">
+    <div class="row" style="justify-content:space-between"><span class="brand">captchastrophe</span><button class="icon-btn" id="theme" type="button" style="width:40px;height:40px"></button></div>
+    <nav class="nav" aria-label="Library" id="nav"></nav>
+    <div class="foot"><a href="#">Rules</a><a href="#">Submit an entry</a><a href="#">Source</a></div>
+  </aside>
+  <section class="listcol" aria-label="Entries">
+    <div class="tools">
+      <div class="search"><span class="sr"><label for="q">Search</label></span><svg/ viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4-4"/></svg><input id="q" type="search" placeholder="Search"></div>
+      
+      <div class="sortrow" id="sorts"></div>
+    </div>
+    <div class="scroll" id="list"></div>
+  </section>
+  <section class="detail" id="detail" aria-live="polite"></section>
+</div>
+<div class="mock-tag">Mock B · Rail · placeholder data</div>
+<script src="assets/motion.js"></script>
+<script src="assets/mock.js"></script>
+<script>
+  initTheme(document.getElementById('theme'));
+  const S = { status: 'accepted', q: '', sort: 'top', unrated: false, sel: null };
+  const sess = { signedIn: false, vote: null };
+  const counts = () => ({ accepted: ENTRIES.filter(e => e.status === 'accepted').length, pre: ENTRIES.filter(e => e.status === 'pre').length });
+
+  function nav() {
+    const c = counts();
+    document.getElementById('nav').innerHTML = [['accepted', 'Accepted', c.accepted], ['pre', 'Pre-review', c.pre]]
+      .map(([k, l, n]) => `<button type="button" data-s="${k}" aria-current="${S.status === k}"><span>${l}</span><span class="n mute">${n}</span></button>`).join('')
+      + `<button type="button" id="unr" aria-current="${S.unrated}"><span>Unrated only</span></button>`;
+    document.querySelectorAll('[data-s]').forEach(b => b.onclick = () => { S.status = b.dataset.s; S.sel = null; draw(); });
+    document.getElementById('unr').onclick = () => { S.unrated = !S.unrated; draw(); };
+  }
+  function draw() {
+    nav();
+    document.getElementById('sorts').innerHTML = ['top', 'trending', 'recent'].map(s => `<button class="chip" style="min-height:40px;padding:0 12px" type="button" data-sort="${s}" aria-pressed="${S.sort === s}">${s[0].toUpperCase() + s.slice(1)}</button>`).join('');
+    document.querySelectorAll('[data-sort]').forEach(b => b.onclick = () => { S.sort = b.dataset.sort; draw(); });
+    const l = filterEntries({ q: S.q, status: S.status, sort: S.sort, unrated: S.unrated });
+    document.getElementById('list').innerHTML = l.length ? l.map(e => `<button class="li" type="button" data-id="${e.id}" aria-current="${S.sel === e.id}"><div class="t">${e.name}</div><div class="m"><span>@${e.author}</span><span class="num">${e.up + e.down ? Math.round(100 * e.up / (e.up + e.down)) + '% · ' + (e.up + e.down) : 'unrated'}</span></div></button>`).join('') : `<div class="empty"><div><p class="strong">Nothing here.</p><p class="small">Clear the search or filter.</p></div></div>`;
+    document.querySelectorAll('.li').forEach(b => b.onclick = () => select(b.dataset.id));
+    detail();
+  }
+  function select(id) { S.sel = id; sess.vote = null; document.getElementById('app').classList.add('open'); draw(); }
+  function detail() {
+    const d = document.getElementById('detail');
+    const e = ENTRIES.find(x => x.id === S.sel);
+    if (!e) { d.innerHTML = `<div class="empty"><div><p class="strong">Pick an entry.</p><p class="small">It won't run until you launch it.</p></div></div>`; return; }
+    const pre = e.status === 'pre';
+    d.innerHTML = `<div class="detail-in">
+      <button class="back mobile-back soft-button" style="border:0;padding:0" type="button" id="bk">${ICON.back} Library</button>
+      <div><span class="badge ${pre ? 'pre' : ''}">${pre ? 'Pre-review' : 'Accepted'}</span><h1 style="margin-top:8px">${e.name}</h1><p class="mute">${e.blurb}</p></div>
+      ${pre ? `<div class="notice"><p><b class="strong">Not reviewed.</b> Open pull request, unchecked code. Sandboxed, no access to this site or your account. Launch is your call.</p></div>` : ''}
+      <div class="stage"><span class="stage-label">Captcha area</span><div class="stage-gate" id="gate"><p>Everything in this box is the captcha's problem.</p><button class="soft-button primary" id="launch" type="button">${pre ? 'Launch anyway' : 'Launch'}</button></div></div>
+      <div class="row" style="justify-content:space-between;flex-wrap:wrap"><div id="vote"></div><div class="row" style="gap:8px"><button class="soft-button" id="reset" disabled>Reset</button><button class="soft-button" id="exit" disabled>Exit</button></div></div>
+      <div class="group"><div class="r"><span class="mute">Author</span><a href="#">@${e.author}</a></div><div class="r"><span class="mute">${pre ? 'Pull request' : 'Source'}</span><a href="#">${pre ? '#' + e.pr : 'View on GitHub'}</a></div><div class="r"><span class="mute">Added</span><span>${e.added}</span></div><div class="r"><span class="mute">Problem?</span><a href="#">Report broken or rule-breaking</a></div></div>
+    </div>`;
+    const gate = document.getElementById('gate');
+    const live = on => { document.getElementById('reset').disabled = !on; document.getElementById('exit').disabled = !on; SoftMotion.replaceContent(gate, on ? `<div class="stage-live"><div class="fake">sandboxed iframe</div></div>` : `<p>Back out of it.</p><button class="soft-button primary" id="launch" type="button">Launch again</button>`); const l = document.getElementById('launch'); if (l) l.onclick = () => live(true); };
+    document.getElementById('launch').onclick = () => live(true);
+    document.getElementById('exit').onclick = () => live(false);
+    document.getElementById('reset').onclick = () => toast('Captcha reset');
+    document.getElementById('bk').onclick = () => document.getElementById('app').classList.remove('open');
+    sess.needSignIn = () => toast('Sign in with GitHub to vote. You\u2019ll land back here.');
+    voteWidget(document.getElementById('vote'), e, sess);
+  }
+  document.getElementById('q').addEventListener('input', e => { S.q = e.target.value; draw(); });
+  const pick = new URLSearchParams(location.search).get('sel');
+  const picked = ENTRIES.find(x => x.id === pick);
+  if (picked) { S.status = picked.status; S.sel = picked.id; document.getElementById('app').classList.add('open'); }
+  draw();
+</script>
+</body>
+</html>

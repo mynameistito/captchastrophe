@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mock C · Frame</title>
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/components.css">
+<link rel="stylesheet" href="assets/mock.css">
+<style>
+  /* Direction: the site is a quiet reading room. The stage is the only wide, full-bleed thing. */
+  .col { max-width: 550px; margin: 0 auto; padding: 0 24px; }
+  .wide { max-width: 1040px; margin: 0 auto; padding: 0 24px; }
+  header.top { display: flex; align-items: center; gap: 16px; max-width: 1040px; margin: 0 auto; padding: 8px 24px; min-height: 72px; }
+  .brand { font-weight: 560; color: var(--strong); text-decoration: none; }
+  header.top .sp { margin-left: auto; display: flex; gap: 4px; align-items: center; }
+  header.top a.l { min-height: 48px; display: inline-flex; align-items: center; padding: 0 12px; font-size: 14px; color: var(--muted-foreground); text-decoration: none; }
+  header.top a.l:hover { color: var(--strong); }
+  .hero { max-width: 1040px; margin: 0 auto; padding: 64px 24px 48px; }
+  .hero > * { max-width: 550px; }
+  .hero h1 { font-size: 24px; line-height: 32px; color: var(--strong); letter-spacing: -.01em; }
+  .hero p { margin-top: 8px; }
+  .filters { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; padding-bottom: 24px; }
+  .filters .search { flex: 1; min-width: 220px; }
+  .tbl { width: 100%; border-collapse: collapse; }
+  .tbl th { text-align: left; font-weight: 400; font-size: 14px; color: var(--muted-foreground); padding: 8px 16px 8px 0; border-bottom: 1px solid var(--border); }
+  .tbl td { padding: 16px 16px 16px 0; border-bottom: 1px solid var(--border); font-size: 14px; line-height: 20px; vertical-align: baseline; }
+  .tbl tr.r { cursor: pointer; }
+  .tbl tr.r:hover td { background: var(--muted); }
+  .tbl td:first-child { padding-left: 16px; } .tbl th:first-child { padding-left: 16px; }
+  .tbl td.t a { color: var(--strong); font-weight: 500; text-decoration: none; }
+  .tbl td.t a:focus-visible { outline-offset: 4px; }
+  .tbl .r-end { text-align: right; padding-right: 16px; }
+  h2.sec { font-size: 16px; font-weight: 500; padding: 48px 16px 8px; display: flex; justify-content: space-between; align-items: baseline; }
+  .pre-wrap { border: 1px dashed var(--border); border-radius: var(--radius-panel); margin-top: 16px; padding-bottom: 8px; }
+  .pre-wrap h2.sec { padding-top: 24px; }
+  .empty { padding: 48px 16px; text-align: center; }
+
+  .entry-head { padding: 24px 0 32px; display: grid; gap: 8px; }
+  .entry-head h1 { font-size: 24px; line-height: 32px; color: var(--strong); letter-spacing: -.01em; }
+  .stagewrap { max-width: 1040px; margin: 0 auto; padding: 0 24px; }
+  .stage { min-height: 420px; }
+  .under { display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: start; padding: 24px 0; }
+  .signin { display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; padding: 16px 24px; border: 1px solid var(--border); border-radius: var(--radius-panel); background: var(--muted); font-size: 14px; line-height: 20px; margin-top: 16px; }
+  .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 24px; padding: 32px 0 96px; font-size: 14px; line-height: 20px; }
+  .facts dt { color: var(--muted-foreground); } .facts dd { margin: 0; color: var(--strong); }
+  @media (max-width: 640px) { .col, .wide, .stagewrap { padding: 0 16px; } .hero { padding: 40px 16px 32px; } header.top { padding: 8px 16px; } .tbl .hm { display: none; } .under { grid-template-columns: 1fr; } .stage { min-height: 360px; } }
+</style>
+</head>
+<body class="soft-ui">
+<header class="top">
+  <a class="brand" href="#/">captchastrophe</a>
+  <div class="sp"><a class="l" href="#">Rules</a><a class="l" href="#">Submit</a><button class="icon-btn" id="theme" type="button"></button></div>
+</header>
+<main id="view"></main>
+<div class="mock-tag">Mock C · Frame · placeholder data</div>
+<script src="assets/motion.js"></script>
+<script src="assets/mock.js"></script>
+<script>
+  initTheme(document.getElementById('theme'));
+  const view = document.getElementById('view');
+  const ui = { q: '', sort: 'top', unrated: false };
+  const sess = { signedIn: false, vote: null };
+  const pct = e => e.up + e.down ? Math.round(100 * e.up / (e.up + e.down)) + '%' : '—';
+
+  const rows = l => l.length ? `<table class="tbl"><thead><tr><th scope="col">Entry</th><th scope="col" class="hm">Author</th><th scope="col" class="hm">Added</th><th scope="col" class="r-end">Approval</th></tr></thead><tbody>${l.map(e => `<tr class="r" onclick="location.hash='#/e/${e.id}'"><td class="t"><a href="#/e/${e.id}">${e.name}</a></td><td class="hm mute">@${e.author}</td><td class="hm mute">${e.added}</td><td class="r-end num">${pct(e)}<span class="mute"> · ${e.up + e.down}</span></td></tr>`).join('')}</tbody></table>` : `<div class="empty"><p class="strong">Nothing matches.</p><p class="small">Clear the search or filter.</p></div>`;
+
+  function home() {
+    const acc = filterEntries({ q: ui.q, status: 'accepted', sort: ui.sort, unrated: ui.unrated });
+    const pre = filterEntries({ q: ui.q, status: 'pre', sort: 'recent', unrated: ui.unrated });
+    view.innerHTML = `<div class="hero"><h1>Worst captcha contest</h1><p>Pick one, launch it, regret it. Then tell us whether it was a good entry.</p></div>
+      <div class="wide"><div class="filters">
+        <div class="search"><span class="sr"><label for="q">Search</label></span><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4-4"/></svg><input id="q" type="search" placeholder="Search entries or authors" value="${ui.q}"></div>
+        <select class="select" id="sort" aria-label="Sort by"><option value="top">Top</option><option value="trending">Trending</option><option value="recent">Recent</option></select>
+        <button class="chip" id="unr" type="button" aria-pressed="${ui.unrated}">Unrated only</button></div>
+      <h2 class="sec" style="padding-top:8px"><span>Accepted</span><span class="small mute num">${acc.length}</span></h2>${rows(acc)}
+      <div class="pre-wrap"><h2 class="sec"><span>Pre-review</span><span class="small mute">Unapproved. Votes don't imply acceptance.</span></h2>${rows(pre)}</div>
+      <div style="height:96px"></div></div>`;
+    document.getElementById('sort').value = ui.sort;
+    document.getElementById('sort').onchange = e => { ui.sort = e.target.value; home(); };
+    document.getElementById('unr').onclick = () => { ui.unrated = !ui.unrated; home(); };
+    document.getElementById('q').addEventListener('input', e => { ui.q = e.target.value; const p = e.target.selectionStart; home(); const n = document.getElementById('q'); n.focus(); n.setSelectionRange(p, p); });
+  }
+
+  function entry(id) {
+    const e = ENTRIES.find(x => x.id === id); if (!e) return home();
+    sess.vote = null; sess.signedIn = false;
+    const pre = e.status === 'pre';
+    view.innerHTML = `<div class="col"><div class="entry-head"><a class="small mute" href="#/">\u2190 Library</a><span class="badge ${pre ? 'pre' : ''}" style="margin-top:16px">${pre ? 'Pre-review' : 'Accepted'}</span><h1>${e.name}</h1><p class="mute">${e.blurb} By @${e.author}.</p>${pre ? `<div class="notice" style="margin-top:16px"><p><b class="strong">Not reviewed.</b> Open PR #${e.pr}. Sandboxed with no access to this site or your account. Launching is deliberate.</p></div>` : ''}</div></div>
+      <div class="stagewrap"><div class="stage" id="stage"><span class="stage-label">Captcha area</span><div class="stage-gate" id="gate"><p>Everything in this box is the captcha's problem.</p><button class="soft-button primary" id="launch" type="button">${pre ? 'Launch anyway' : 'Launch'}</button></div></div>
+        <div class="under"><div class="row" style="gap:8px;flex-wrap:wrap"><button class="soft-button" id="reset" disabled>Reset</button><button class="soft-button" id="exit" disabled>Exit captcha</button></div><div class="row" style="gap:8px"><span class="small mute">Mute</span></div></div>
+        <div class="col" style="padding:0"><h2 style="font-weight:500">Was it a good entry?</h2><p class="small" style="margin-top:4px">Good means a good contest submission. Weak means a weak one. Annoying you is the job.</p>
+          <div style="margin-top:16px" id="vote"></div>
+          <div class="signin hide" id="si"><span>Sign in with GitHub to vote. We only read your public identity. You'll come back to this page.</span><button class="soft-button lime" id="signin" type="button">Sign in with GitHub</button></div>
+          <dl class="facts"><div><dt>Author</dt><dd><a href="#">@${e.author}</a></dd></div><div><dt>${pre ? 'Pull request' : 'Source'}</dt><dd><a href="#">${pre ? '#' + e.pr : 'GitHub'}</a></dd></div><div><dt>Added</dt><dd>${e.added}</dd></div><div><dt>Problem?</dt><dd><a href="#">Report it</a></dd></div></dl></div></div>`;
+    const gate = document.getElementById('gate');
+    const live = on => { document.getElementById('reset').disabled = !on; document.getElementById('exit').disabled = !on; SoftMotion.replaceContent(gate, on ? `<div class="stage-live"><div class="fake">sandboxed iframe</div></div>` : `<p>Back out of it.</p><button class="soft-button primary" id="launch" type="button">Launch again</button>`); const l = document.getElementById('launch'); if (l) l.onclick = () => live(true); };
+    document.getElementById('launch').onclick = () => live(true);
+    document.getElementById('exit').onclick = () => live(false);
+    document.getElementById('reset').onclick = () => toast('Captcha reset');
+    sess.needSignIn = () => { document.getElementById('si').classList.remove('hide'); };
+    document.getElementById('signin').onclick = () => { sess.signedIn = true; document.getElementById('si').classList.add('hide'); toast('Signed in as @you. Nothing was voted.'); };
+    voteWidget(document.getElementById('vote'), e, sess);
+  }
+  function route() { const m = location.hash.match(/^#\/e\/(\w+)/); m ? entry(m[1]) : home(); window.scrollTo(0, 0); }
+  addEventListener('hashchange', route); route();
+</script>
+</body>
+</html>

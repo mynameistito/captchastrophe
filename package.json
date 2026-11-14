@@ -1,0 +1,36 @@
+{
+  "name": "captchastrophe",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@12.18.0",
+  "engines": {
+    "node": ">=24"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@edge-runtime/vm": "5.0.0",
+    "@types/node": "26.6.6",
+    "convex-test": "0.0.71",
+    "esbuild": "0.28.2",
+    "typescript": "7.0.2",
+    "vite": "8.3.8",
+    "vitest": "5.1.0",
+    "wrangler": "4.161.0",
+    "zod": "4.6.7"
+  },
+  "dependencies": {
+    "@convex-dev/auth": "2.0.0",
+    "convex": "1.50.0",
+    "howler": "2.2.4",
+    "seedrandom": "3.0.5"
+  },
+  "scripts": {
+    "dev": "vite --config site/vite.config.ts",
+    "validate": "node scripts/validate.ts",
+    "build:play": "node scripts/build-play.ts",
+    "build:site": "node scripts/build-site.ts",
+    "build": "node scripts/validate.ts && node scripts/build-play.ts && node scripts/build-site.ts",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p convex",
+    "test": "vitest run"
+  }
+}

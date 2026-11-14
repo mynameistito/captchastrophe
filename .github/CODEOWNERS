@@ -1,0 +1,15 @@
+# Human acceptance is the default, including contestant entries.
+* @pc-style
+/.github/ @pc-style
+/scripts/ @pc-style
+/sdk/ @pc-style
+/play/ @pc-style
+/site/ @pc-style
+/convex/ @pc-style
+/docs/ @pc-style
+/.agents/ @pc-style
+/AGENTS.md @pc-style
+/package.json @pc-style
+/pnpm-lock.yaml @pc-style
+/pnpm-workspace.yaml @pc-style
+/wrangler.* @pc-style

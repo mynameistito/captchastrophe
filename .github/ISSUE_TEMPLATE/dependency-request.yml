@@ -1,0 +1,24 @@
+name: Dependency request
+description: Ask for a pinned shared package.
+labels: [dependency-request]
+body:
+  - type: input
+    id: package
+    attributes:
+      label: Package and exact version
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why this package?
+      description: What do you need it for? Why not the existing tools?
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: License, browser bundle size and install scripts
+      description: Link to the package source. Mention runtime network requests or native binaries.
+    validations:
+      required: true

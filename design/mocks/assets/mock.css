@@ -1,0 +1,56 @@
+/* Shared by all three mocks. Placeholder content only. */
+html { background: var(--background); }
+body { margin: 0; min-height: 100vh; }
+a { color: inherit; text-decoration-color: var(--border); text-underline-offset: 3px; }
+a:hover { text-decoration-color: currentColor; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.strong { color: var(--strong); font-weight: 500; }
+.mute { color: var(--muted-foreground); }
+.small { font-size: 14px; line-height: 20px; }
+.mono { font-family: var(--mono); font-size: 13px; }
+.num { font-variant-numeric: tabular-nums; }
+.row { display: flex; align-items: center; gap: 16px; }
+.grow { flex: 1; min-width: 0; }
+.hide { display: none !important; }
+
+.icon-btn { width: 48px; height: 48px; display: grid; place-items: center; border: 0; background: none; border-radius: var(--radius-control); color: var(--muted-foreground); }
+.icon-btn:hover { background: var(--muted); color: var(--strong); }
+.icon-btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+
+.search { position: relative; }
+.search input { width: 100%; min-height: 48px; padding: 0 16px 0 44px; border: 1px solid var(--border); border-radius: var(--radius-control); background: var(--muted); font-size: 14px; }
+.search input::placeholder { color: var(--muted-foreground); }
+.search svg { position: absolute; left: 16px; top: 15px; width: 18px; height: 18px; fill: none; stroke: var(--muted-foreground); stroke-width: 1.5; stroke-linecap: round; }
+
+.chip { min-height: 48px; padding: 0 16px; border: 1px solid transparent; border-radius: var(--radius-pill); background: none; color: var(--muted-foreground); font-size: 14px; }
+.chip:hover { color: var(--strong); }
+.chip[aria-pressed=true], .chip[aria-selected=true] { background: var(--muted); border-color: var(--border); color: var(--strong); }
+
+.select { min-height: 48px; padding: 0 12px; border: 1px solid var(--border); border-radius: var(--radius-control); background: var(--background); font-size: 14px; }
+
+.badge { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; line-height: 20px; color: var(--muted-foreground); }
+.badge::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--foreground); }
+.badge.pre::before { background: transparent; border: 1.5px solid var(--muted-foreground); }
+
+.vote { display: inline-flex; align-items: center; border: 1px solid var(--border); border-radius: var(--radius-control); overflow: hidden; }
+.vote button { min-height: 48px; min-width: 48px; padding: 0 16px; border: 0; background: var(--background); font-size: 14px; display: inline-flex; align-items: center; gap: 8px; }
+.vote button + button { border-left: 1px solid var(--border); }
+.vote button:hover:not(:disabled) { background: var(--muted); color: var(--strong); }
+.vote button[aria-pressed=true] { background: var(--muted); color: var(--strong); box-shadow: inset 0 -2px 0 var(--foreground); }
+.vote svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+
+/* The stage: the one place the design is allowed to be broken. Boundary is drawn by the trusted page. */
+.stage { position: relative; border: 1px dashed var(--ring); border-radius: var(--radius-panel); background: var(--background); min-height: 320px; display: grid; place-items: center; }
+.stage-gate { text-align: center; max-width: 360px; padding: 32px 24px; display: grid; gap: 16px; justify-items: center; }
+.stage-gate p { font-size: 14px; line-height: 20px; }
+.stage-live { width: 100%; height: 100%; min-height: 320px; display: grid; place-items: center; }
+.stage-live .fake { width: 220px; height: 120px; border-radius: 8px; background: repeating-linear-gradient(45deg, var(--muted), var(--muted) 8px, var(--background) 8px, var(--background) 16px); border: 1px solid var(--border); display: grid; place-items: center; font-family: var(--mono); font-size: 12px; color: var(--muted-foreground); }
+.stage-label { position: absolute; top: 0; left: 16px; transform: translateY(-50%); padding: 0 8px; background: var(--background); font-size: 14px; color: var(--muted-foreground); }
+
+.mobile-back svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.notice { display: flex; gap: 16px; align-items: flex-start; padding: 16px 24px; border: 1px solid var(--border); border-radius: var(--radius-panel); background: var(--muted); font-size: 14px; line-height: 20px; }
+.notice p { margin: 0; }
+
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); padding: 12px 16px; border-radius: var(--radius-popup); background: var(--strong); color: var(--background); font-size: 14px; box-shadow: var(--shadow-popup); z-index: 9; }
+
+.mock-tag { position: fixed; right: 12px; bottom: 12px; padding: 4px 8px; border: 1px solid var(--border); border-radius: var(--radius-pill); background: var(--background); color: var(--muted-foreground); font-size: 12px; z-index: 5; pointer-events: none; }

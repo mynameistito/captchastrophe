@@ -1,0 +1,17 @@
+name: Broken entry or rule violation
+description: Reports are separate from votes.
+labels: [broken]
+body:
+  - type: input
+    id: entry
+    attributes:
+      label: Entry URL or ID
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: What happened?
+      description: Reproduction steps, browser/device, expected behavior and actual behavior. Don't include credentials or private player data.
+    validations:
+      required: true

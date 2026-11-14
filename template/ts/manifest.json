@@ -1,0 +1,16 @@
+{
+  "id": "my-captcha",
+  "title": "Wiring fixture",
+  "description": "Neutral mount, success and cleanup fixture. Not a contest entry.",
+  "author": {
+    "github": "pc-style"
+  },
+  "entry": "entry.ts",
+  "capabilities": [],
+  "concept": {
+    "action": "Check the interface wiring.",
+    "sequence": "Mount, report success, continue, reset.",
+    "difficulty": "None. This is not a contest entry.",
+    "success": "The shell receives the success signal."
+  }
+}

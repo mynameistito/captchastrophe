@@ -1,0 +1,15 @@
+node_modules
+dist
+.env
+.env.*
+!.env.example
+.wrangler
+.convex
+*.log
+.DS_Store
+design/mocks/shots
+design/evidence
+.dev-play
+.deploy
+.preview
+downloaded
