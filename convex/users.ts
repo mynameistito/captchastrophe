@@ -21,6 +21,10 @@ export const fetchAccountAge=internalAction({args:{userId:v.id('users'),githubId
   if(!/^\d+$/.test(args.githubId))throw new Error('Invalid GitHub ID');
   const headers:Record<string,string>={Accept:'application/vnd.github+json','User-Agent':'captchastrophe'};
   if(process.env.GITHUB_API_TOKEN)headers.Authorization='Bearer '+process.env.GITHUB_API_TOKEN;
+  else if(process.env.AUTH_GITHUB_CLIENT_ID && process.env.AUTH_GITHUB_CLIENT_SECRET) {
+    // Public-data requests use the app's quota, not a shared unauthenticated server IP.
+    headers.Authorization='Basic '+btoa(process.env.AUTH_GITHUB_CLIENT_ID+':'+process.env.AUTH_GITHUB_CLIENT_SECRET);
+  }
   const response=await fetch('https://api.github.com/user/'+args.githubId,{headers,signal:AbortSignal.timeout(10000)});
   if(!response.ok)throw new Error('GitHub account lookup failed: '+response.status);
   const data=await response.json(); const createdAt=Date.parse(data.created_at);

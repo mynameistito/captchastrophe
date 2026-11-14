@@ -1,10 +1,11 @@
 import fs from 'node:fs/promises';
 import { execFileSync } from 'node:child_process';
-import { build } from 'vite';
+import { build, loadEnv } from 'vite';
 import { z } from 'zod';
 import { manifestSchema } from './manifest.ts';
 import { listSubmissionDirs, validateDirectory } from './validate.ts';
 
+const env = { ...loadEnv('production', process.cwd(), 'VITE_'), ...process.env };
 await build({ configFile: 'site/vite.config.ts' });
 const entries = [];
 for (const dir of listSubmissionDirs().dirs) {
@@ -25,5 +26,5 @@ if (flag !== -1) {
 }
 await fs.mkdir('dist/site/data', { recursive: true });
 await fs.writeFile('dist/site/data/index.json', JSON.stringify({ generatedAt: new Date().toISOString(), entries }));
-await fs.writeFile('dist/site/data/config.json', JSON.stringify({ playOrigin: process.env.VITE_PLAY_ORIGIN ?? null, voting: !!process.env.VITE_CONVEX_URL }));
+await fs.writeFile('dist/site/data/config.json', JSON.stringify({ playOrigin: env.VITE_PLAY_ORIGIN ?? null, voting: !!env.VITE_CONVEX_URL }));
 console.log(`Built gallery: ${entries.length} accepted entries`);

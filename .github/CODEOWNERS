@@ -10,6 +10,5 @@
 /.agents/ @pc-style
 /AGENTS.md @pc-style
 /package.json @pc-style
-/pnpm-lock.yaml @pc-style
-/pnpm-workspace.yaml @pc-style
+/bun.lock @pc-style
 /wrangler.* @pc-style

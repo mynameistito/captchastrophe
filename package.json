@@ -2,7 +2,7 @@
   "name": "captchastrophe",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@12.18.0",
+  "packageManager": "bun@1.4.0",
   "engines": {
     "node": ">=24"
   },
@@ -10,6 +10,7 @@
   "devDependencies": {
     "@edge-runtime/vm": "5.0.0",
     "@types/node": "26.6.6",
+    "cf": "1.0.0-beta.32",
     "convex-test": "0.0.71",
     "esbuild": "0.28.2",
     "typescript": "7.0.2",
@@ -32,5 +33,9 @@
     "build": "node scripts/validate.ts && node scripts/build-play.ts && node scripts/build-site.ts",
     "typecheck": "tsc --noEmit && tsc --noEmit -p convex",
     "test": "vitest run"
-  }
+  },
+  "trustedDependencies": [
+    "esbuild",
+    "workerd"
+  ]
 }

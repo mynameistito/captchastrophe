@@ -4,6 +4,7 @@ dist
 .env.*
 !.env.example
 .wrangler
+.cloudflare
 .convex
 *.log
 .DS_Store

@@ -32,8 +32,8 @@ Normal entries stay in `submissions/<id>/`. Shared code, rules, dependencies, lo
 
 Use pinned approved [dependencies](docs/dependencies.md). New packages need a dependency request issue, or private contact if the contributor already knows how. No vendored-library workaround.
 
-Use Node 24 and pnpm. **Never use npx or dlx.** Install from the lockfile with `pnpm install --frozen-lockfile`; run installed tools with `pnpm exec`.
+Use Node 24 and bun. **Never use npx.** Bunx is allowed; prefer installed, pinned tools. Install from the lockfile with `bun install --frozen-lockfile`; run installed tools with `bunx --no-install`.
 
-Checks: `pnpm run validate`, `pnpm run typecheck`, `pnpm test`, `pnpm run build`. Run focused checks for changes, then the required submission preflight. Don't repeat broad suites after nothing changed.
+Checks: `bun run validate`, `bun run typecheck`, `bun run test`, `bun run build`. Run focused checks for changes, then the required submission preflight. Don't repeat broad suites after nothing changed.
 
 Local reading, editing within the entry, builds and disposable tests need no extra approval. Ask for missing access, spending money or changing someone else's work. Finish with actual evidence and unresolved issues, not claims about tests you didn't run.

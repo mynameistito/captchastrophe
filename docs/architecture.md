@@ -14,7 +14,7 @@ Implementation contract. Deployment status and remaining verification live in [m
 - `convex/`: Auth v2, GitHub identity, votes, aggregate rankings and private moderation.
 - `.github/`: CI, protected publishing, cleanup, metadata refresh, templates and code ownership.
 
-Node 24, pnpm only. `validate`, `typecheck`, `test`, `build` are deterministic without hosted credentials. `build:play -- --include-fixtures` includes test fixtures when invoked directly as `node scripts/build-play.ts --include-fixtures`.
+Node 24, bun only. `validate`, `typecheck`, `test`, `build` are deterministic without hosted credentials. `build:play -- --include-fixtures` includes test fixtures when invoked directly as `node scripts/build-play.ts --include-fixtures`.
 
 ## Entry contract
 

@@ -9,7 +9,7 @@ The user's premise, core action, interaction sequence, difficulty and success co
 
 ## Do
 1. Read accepted entries in `submissions/`, including manifests and code where needed.
-2. List **all** open PRs, including drafts and unreviewed work. Paginate until exhausted. With GitHub CLI, `gh api --paginate repos/pc-style/captchastrophe/pulls?state=open&per_page=100` is one option. Otherwise use the available API or browser.
+2. List **all** open PRs, including drafts and unreviewed work. Paginate until exhausted. With GitHub CLI, `gh api --paginate 'repos/pc-style/captchastrophe/pulls?state=open&per_page=100'` is one option. Otherwise use the available API or browser.
 3. Read descriptions, manifests and relevant code. Titles alone aren't evidence.
 4. Compare what the player does, in what order, what makes it hard, and what passes. Shared infrastructure or a shared browser capability alone isn't duplication.
 5. Show the closest meaningful matches with links and the overlap. No meaningful overlap? Say so and continue; don't ask for permission.

@@ -10,4 +10,4 @@ node scripts/dev-play.ts your-id
 
 Open the printed local URL. Restart after changes. Reset, Exit and theme controls are in the outer local page.
 
-Read `sdk/README.md` for the mount contract. Run `pnpm run validate`, `pnpm run typecheck`, `pnpm test` and `pnpm run build` before submitting.
+Read `sdk/README.md` for the mount contract. Run `bun run validate`, `bun run typecheck`, `bun run test` and `bun run build` before submitting.

@@ -6,8 +6,9 @@
 - Local: design C gallery, TS/JS mount runtime, fixtures, validation/build, contributor docs/skills, Convex auth/voting code and tests.
 - Convex project created under `pc-style`: https://dashboard.convex.dev/t/pc-style/captchastrophe
 - Dev provisioned: `little-dachshund-797`; production provisioned: `posh-blackbird-302`.
-- Backend deployment attempted, **blocked** by missing GitHub OAuth client ID/secret. Provisioned does not mean functions deployed.
-- Cloudflare login expired. **No public site or fork preview is deployed.** `HOSTING_ENABLED=false` until setup and verification finish.
+- Auth/voting functions deployed to both dev and production. OAuth app is owned by pc-style; both exact callbacks and credentials are configured. Production login, reload/session restoration and sign-out passed in Helium. Server-side GitHub identity and account-age lookup passed.
+- Gallery deployed with `cf` 1.0.0-beta.32: https://captchastrophe-site.pcstyle.workers.dev (version `5f65b94a-c627-4c71-b9b4-da07513d647f`). Live HTTP/security headers and Chrome desktop/mobile light/dark checks pass. Gallery is empty; auth/voting integration is enabled. No fork preview is deployed.
+- Scoped Cloudflare publishing credentials are stored in both GitHub environments; the broad local OAuth credentials are not copied to CI. Workers account had 41 Workers before this gallery. `HOSTING_ENABLED=false` until updated workflows are pushed and verified; `VOTING_ENABLED=true` following the production login test.
 - Private vulnerability reporting enabled. Default Actions token is read-only; Actions cannot approve PRs.
 - GitHub settings applied and read back: active main ruleset requiring `checks`, one approving review and CODEOWNERS; no force pushes/deletion. Admin bypass retained for bootstrap/emergencies. `preview` requires pc-style approval; preview/production only deploy from main. Ten labels created. Setup is reproducible through `.github/scripts/setup-repo.ts`.
 
@@ -17,7 +18,7 @@ Static Vite/TypeScript gallery. Framework-independent TS/JS entries bundled with
 
 The iframe allows scripts and same-origin only on its distinct origin, plus declared capabilities. The parent validates message source/origin/shapes and offers no voting message. Auth lives in the gallery's sessionStorage. Exit removes the frame; mute is cooperative. Headers restrict direct visits too. Local browser checks are not a substitute for checking the deployed HTTPS boundary.
 
-Production uses `scripts/publish.ts`: static-only Wrangler configs generated from trusted code, not contestant config. Names and per-entry origins are deterministic; deployment writes `data/config.json`. Fork previews use main's gallery, one validated CI artifact, no Convex URL, and a protected maintainer-triggered workflow. CI never gets deployment secrets. No shared Actions caches.
+Production uses `scripts/publish.ts`: static-only `cf` configs generated from trusted code, not contestant config. The pinned CLI deploys prebuilt directories without invoking contestant tooling; `--dry-run` skips uploads and registry sync. Names and per-entry origins are deterministic; deployment writes `data/config.json`. Fork previews use main's gallery, one validated CI artifact, no Convex URL, and a protected maintainer-triggered workflow. CI never gets deployment secrets. No shared Actions caches.
 
 ## Hosting choice and limits
 
@@ -44,11 +45,11 @@ Accepted rankings and pre-review lists stay separate. Editing metadata preserves
 
 ## Finish setup
 
-1. Cloudflare: authenticate with `pnpm exec wrangler login`, or configure an API token with account **Workers Scripts: Edit** on the intended account. Store `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` as GitHub environment secrets. Set repository variable `CLOUDFLARE_WORKERS_SUBDOMAIN`. Check free-plan Worker capacity first.
-2. GitHub OAuth: follow [exact fields](convex-setup.md). Set secrets in Convex, never Git or chat. Then `pnpm exec convex dev --once` and, after testing, `pnpm exec convex deploy`.
-3. Set production `ALLOWED_REDIRECT_ORIGINS` to the exact gallery origin returned by deployment. No wildcard, no preview origins. Set a random >=32-character `SYNC_TOKEN` in Convex production and the GitHub production environment. The sync HTTP route has no browser CORS policy.
-4. Repo variables `VITE_CONVEX_URL` and `CONVEX_SITE_URL` already point to the provisioned production deployment. Enable `HOSTING_ENABLED=true` only once credentials, environment protection and quotas are checked.
-5. Run Deploy production. Inspect real headers, light/dark/mobile, permission opt-in/denial, session isolation and GitHub login. Trigger Publish authorized fork preview for a real fork PR with green CI. Validate its source commit and confirm it cannot use production votes. **These deployed checks are still outstanding.**
+1. Cloudflare local login and first deployment are complete. Use `bunx --no-install cf auth login` when needed. GitHub production/preview secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` and repository variable `CLOUDFLARE_WORKERS_SUBDOMAIN=pcstyle` are configured. CI uses a separate token with Workers Scripts Write and Account Settings Read on this account.
+2. GitHub OAuth setup and backend deployments are complete; see [local development and remaining verification](convex-setup.md). Credentials remain in ignored `.env.local` and Convex, not Git or chat.
+3. Production `ALLOWED_REDIRECT_ORIGINS` is set to `https://captchastrophe-site.pcstyle.workers.dev`. No wildcard, no preview origins. A random 64-character `SYNC_TOKEN` is configured in Convex production and the GitHub production environment. The sync HTTP route has no browser CORS policy.
+4. Repo variables `VITE_CONVEX_URL` and `CONVEX_SITE_URL` already point to the provisioned production deployment. Push the Bun/cf workflow changes and verify CI before enabling `HOSTING_ENABLED=true`. `VOTING_ENABLED=true` is configured; the updated workflows omit the Convex browser configuration when it is false.
+5. Run Deploy production after pushing the workflow updates. Live gallery headers and light/dark/mobile are checked; GitHub login is checked; deployed permission behavior and session isolation still need verification with playable entries. Trigger Publish authorized fork preview for a real fork PR with green CI. Validate its source commit and confirm it cannot use production votes. **The actual fork preview path is still unverified.**
 6. Scheduled metadata publishing lists valid PR metadata. A PR's authorized playable preview is linked from its sticky PR comment; opening a PR alone never runs code. Existing accepted IDs take precedence over pre-review revisions of that same ID.
 
 Maintainer controls: call `maintainer:bursts`, `maintainer:suspend`, and paginated `maintainer:invalidate` with an authenticated maintainer session. Authorization uses `MAINTAINER_GITHUB_IDS` (set to `134572227` on dev/prod). Suspension and invalidation are separate. Audit records are private. Administrative CLI calls must also carry a valid user identity; deployment admin access alone is not accepted as a voting identity.

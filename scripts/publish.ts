@@ -13,9 +13,13 @@ const index=JSON.parse(await fs.readFile('dist/site/data/index.json','utf8'));
 const entryOrigins:Record<string,string>={};
 const deployRoot=path.resolve('.deploy');await fs.mkdir(deployRoot,{recursive:true});
 async function upload(name:string,directory:string){
-  const config=path.join(deployRoot,name+'.json');
-  await fs.writeFile(config,JSON.stringify({name,compatibility_date:'2026-11-14',workers_dev:true,assets:{directory:path.resolve(directory)}}));
-  execFileSync(process.execPath,['node_modules/wrangler/bin/wrangler.js','deploy','--config',config],{stdio:'inherit',timeout:120000});
+  const cwd=path.join(deployRoot,name);
+  await fs.mkdir(cwd,{recursive:true});
+  const config={worker:{name,compatibilityDate:'2026-11-14',workersDev:true}};
+  await fs.writeFile(path.join(cwd,'cloudflare.config.ts'),`import { defineConfig } from 'cf/config';\nexport default defineConfig(${JSON.stringify(config)});\n`);
+  const args=[path.resolve('node_modules/cf/bin/cf'),'deploy',path.resolve(directory)];
+  if(process.argv.includes('--dry-run'))args.push('--dry-run');
+  execFileSync(process.execPath,args,{cwd,stdio:'inherit',timeout:120000});
 }
 for(const entry of index.entries){
   if (!preview && entry.status !== 'accepted') continue;
@@ -31,9 +35,9 @@ await fs.writeFile('dist/site/data/config.json',JSON.stringify({entryOrigins,vot
 const origins=Object.keys(entryOrigins).length ? `https://*.${accountSubdomain}.workers.dev` : '';
 await fs.writeFile('dist/site/_headers',`/*\n  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: https://avatars.githubusercontent.com; connect-src 'self' https://*.convex.cloud https://*.convex.site wss://*.convex.cloud; frame-src ${origins || "'none'"}; frame-ancestors 'none'; object-src 'none'; base-uri 'none'; form-action 'self'\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: no-referrer\n`);
 await upload(siteName,'dist/site');
-console.log('Gallery: '+siteOrigin);
-if(process.env.GITHUB_OUTPUT)await fs.appendFile(process.env.GITHUB_OUTPUT,`url=${siteOrigin}\n`);
-if(!preview && process.env.CONVEX_SITE_URL && process.env.SYNC_TOKEN){
+console.log((process.argv.includes('--dry-run')?'Dry-run gallery target: ':'Gallery: ')+siteOrigin);
+if(!process.argv.includes('--dry-run') && process.env.GITHUB_OUTPUT)await fs.appendFile(process.env.GITHUB_OUTPUT,`url=${siteOrigin}\n`);
+if(!process.argv.includes('--dry-run') && !preview && process.env.CONVEX_SITE_URL && process.env.SYNC_TOKEN){
   for(let i=0;i<index.entries.length;i+=100){
     const response=await fetch(process.env.CONVEX_SITE_URL+'/sync/submissions',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+process.env.SYNC_TOKEN},body:JSON.stringify({entries:index.entries.slice(i,i+100)}),signal:AbortSignal.timeout(15000)});
     if(!response.ok)throw new Error('Submission sync failed: '+response.status);

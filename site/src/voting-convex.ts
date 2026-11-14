@@ -20,10 +20,10 @@ export function createConvexVoting(url: string): Voting {
   const ready = (async () => {
     await auth.init();
     const current = new URL(location.href);
-    const code = current.searchParams.get('code');
+    const code = current.searchParams.get('convexAuthCode');
     if(code) {
       const state = sessionStorage.getItem(stateKey);
-      current.searchParams.delete('code'); history.replaceState(null,'',current);
+      current.searchParams.delete('convexAuthCode'); history.replaceState(null,'',current);
       if(state) {
         sessionStorage.removeItem(stateKey);
         const result = await publicClient.mutation(anyApi.auth.completeSignInWithGithub,{code,state});
@@ -40,7 +40,7 @@ export function createConvexVoting(url: string): Voting {
     user: () => user,
     async signIn(returnHash) {
       await ready;
-      const back = new URL(location.href); back.hash = returnHash.startsWith('#/') ? returnHash : '#/'; back.searchParams.delete('code');
+      const back = new URL(location.href); back.hash = returnHash.startsWith('#/') ? returnHash : '#/'; back.searchParams.delete('convexAuthCode');
       const result = await publicClient.mutation(anyApi.auth.startSignInWithGithub,{redirectTo:back.href});
       sessionStorage.setItem(stateKey,result.state);
       location.assign(result.redirect);

@@ -10,16 +10,16 @@ Bring a premise. Keep the site around it pleasant. Read the [rules](docs/rules.m
 6. Inspect your diff, commit your entry, push your branch and open one PR against `main`. Use the PR template. [submit](.agents/skills/submit/SKILL.md) covers checks and feedback.
 
 ```sh
-pnpm install --frozen-lockfile
+bun install --frozen-lockfile
 node scripts/dev-play.ts your-id
 # In another terminal, after playing:
-pnpm run validate
-pnpm run typecheck
-pnpm test
-pnpm run build
+bun run validate
+bun run typecheck
+bun run test
+bun run build
 ```
 
-Use Node 24. No npx or dlx. TS and plain JS both work; the shell doesn't pick your interaction framework for you.
+Use Node 24. No npx. Bunx is allowed. TS and plain JS both work; the shell doesn't pick your interaction framework for you.
 
 CI is deterministic and doesn't need a paid AI service. AI review, if present, is advisory. A human accepts entries. An absent review isn't approval.
 
